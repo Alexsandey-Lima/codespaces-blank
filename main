@@ -1,0 +1,98 @@
+class Loja:
+    def __init__(self, nome):
+        self.nome_loja = nome
+        self.logo_marca = None
+        self.lista_clientes = []
+        self.funcionarios = None
+        self.caixa = 0
+
+    def vender(self, valor_venda,item,quantidade,lote=0):
+        self.caixa += valor_venda
+        print( 'venda executada com sucesso')
+
+    def consultar_caixa(self):
+        print(self.caixa)
+
+    def cadastrar_cliente(self, nome_cliente, cpf_cliente, endereco_cliente, historico_cliente):
+        cliente = {"nome": nome_cliente, "CPF": cpf_cliente, "endereco": endereco_cliente,
+                   "Historico": historico_cliente}
+        self.lista_clientes.append(cliente)
+
+    def consultar_clientes(self):
+        print("Clientes:\n")
+        for cliente_index in self.lista_clientes:
+            print(
+                f"|{self.lista_clientes.index(cliente_index) + 1}|Nome: {cliente_index['nome']} | CPF: {cliente_index['CPF']} | Endereco: {cliente_index['endereco']}|")
+
+
+class Loja_sem_estoque(Loja):
+    def __init__(self, nome):
+        super().__init__(nome)
+
+
+class Loja_comum(Loja):
+    def __init__(self, nome):
+        self.estoque = []
+        super().__init__(nome)
+
+
+    def vender(self,valor_venda,item,quantidade,lote=0):
+        super().vender(valor_venda,item,quantidade,lote=0)
+        self.__retirar_estoque(item, quantidade, lote)
+
+    def consultar_estoque(self):
+        print("Estoque:\n")
+        for estoque_index in self.estoque:
+            print(
+                f"|{self.estoque.index(estoque_index) + 1}|Item: {estoque_index['nome']} | Quantidade : {estoque_index['quantidade']} {estoque_index['unidade de medida']} | Lote: {estoque_index['lote']}| Genero:{estoque_index['genero']} | Valor: {estoque_index['valor']} | Preco unitario:{estoque_index['preço']}| ")
+
+    def __adicionar_estoque(self, item):
+        self.estoque.append(item)
+
+    def __retirar_estoque(self, item,quantidade,lote=0):
+
+        for posicao in range(len(self.estoque)):
+            index = self.estoque[posicao]
+            if index['nome'] == item and lote == index['lote']:
+              index['quantidade']-=quantidade
+
+            else:
+                pass
+
+    def compra_mercadorias(self, nome, medida_unidade, quantidade, lote, genero, valor_unitario, preco_unitario):
+        item = {"nome": nome, "unidade de medida": medida_unidade, "quantidade": quantidade, "lote": lote,
+                "genero": genero, "valor": valor_unitario, "preço": preco_unitario}
+        self.__adicionar_estoque(item)
+
+    def devolucao_venda(self, nome, medida_unidade, quantidade, lote, genero, valor_unitario, preco_unitario):
+        item = {"nome": nome, "unidade de medida": medida_unidade, "quantidade": quantidade, "lote": lote,
+                "genero": genero, "valor": valor_unitario, "preço": preco_unitario}
+        self.__adicionar_estoque(item)
+
+
+class Produto:
+    def __init__(self, loja, nome, unidade_medida, quantidade, lote, genero, valor_unitario):
+        self.nome_produto = nome
+        self.medida_unidade = unidade_medida
+        self.quantidade = quantidade
+        self.lote = lote
+        self.genero = genero
+        self.valor_unitario = valor_unitario
+        self.preco_unitario = None
+        loja.adicionar_estoque(self.nome_produto, self.medida_unidade, self.quantidade, self.lote, self.genero,
+                               self.valor_unitario, self.preco_unitario)
+
+
+class Cliente:
+    def __init__(self, loja, nome, endereco, cpf):
+        self.nome_cliente = nome
+        self.endereco_cliente = endereco
+        self.cpf_cliente = cpf
+        self.historico_cliente = None
+        loja.cadastrar_cliente(self.nome_cliente, self.cpf_cliente, self.endereco_cliente, self.historico_cliente)
+
+    def comprar(self,loja,valor_pago,item,quantidade):
+        loja.vender(valor_pago,item,quantidade)
+        pass
+    def devolver(self):
+        pass
